@@ -1,0 +1,71 @@
+// Blockklasse repräsentiert einen Block in der Blockchain
+class Block {
+    constructor(index, vorherigerHash, timestamp, daten, hash) {
+        this.index = index;             // Index des Blocks in der Kette
+        this.vorherigerHash = vorherigerHash; // Hash des vorherigen Blocks
+        this.timestamp = timestamp;     // Zeitstempel der Erstellung
+        this.daten = daten;             // Nutzlast oder Transaktionsdaten
+        this.hash = hash;               // Hash dieses Blocks
+    }
+}
+
+// Blockchainklasse repräsentiert die gesamte Blockchain
+class Blockchain {
+    constructor() {
+        this.chain = [this.ersterBlock()]; // Die Blockchain beginnt mit dem ersten Block
+    }
+
+    // Funktion zum Erstellen des ersten Blocks (Genesis-Block)
+    ersterBlock() {
+        return new Block(0, '0', Date.now(), 'Genesis-Block', '0000');
+    }
+
+    // Funktion zum Abrufen des letzten Blocks in der Blockchain
+    letzterBlock() {
+        return this.chain[this.chain.length - 1];
+    }
+
+    // Funktion zum Hinzufügen eines neuen Blocks zur Blockchain
+    blockHinzufügen(neuerBlock) {
+        neuerBlock.vorherigerHash = this.letzterBlock().hash; // Setzen Sie den vorherigen Hash-Wert
+        neuerBlock.hash = this.berechneBlockHash(neuerBlock); // Berechnen Sie den Hash für den neuen Block
+        this.chain.push(neuerBlock); // Fügen Sie den neuen Block zur Blockchain hinzu
+    }
+
+    // Funktion zum Berechnen des Hash-Werts für einen Block
+    berechneBlockHash(block) {
+        const { index, vorherigerHash, timestamp, daten } = block;
+        const blockDaten = `${index}${vorherigerHash}${timestamp}${daten}`;
+        // Verwenden Sie hier eine geeignete Hash-Funktion (z.B. SHA-256)
+        return sha256(blockDaten);
+    }
+
+    // Funktion zum Überprüfen der Integrität der Blockchain
+    istBlockchainGültig() {
+        for (let i = 1; i < this.chain.length; i++) {
+            const aktuellerBlock = this.chain[i];
+            const vorherigerBlock = this.chain[i - 1];
+
+            // Überprüfen Sie, ob der vorherige Hash-Wert korrekt ist
+            if (aktuellerBlock.vorherigerHash !== vorherigerBlock.hash) {
+                return false;
+            }
+
+            // Überprüfen Sie, ob der aktuelle Block-Hash-Wert korrekt ist
+            if (aktuellerBlock.hash !== this.berechneBlockHash(aktuellerBlock)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+// Beispielaufrufe der Blockchain-Funktionen
+const meineBlockchain = new Blockchain();
+
+// Hinzufügen von Blöcken zur Blockchain
+meineBlockchain.blockHinzufügen(new Block(1, '', Date.now(), 'Transaktion 1', ''));
+meineBlockchain.blockHinzufügen(new Block(2, '', Date.now(), 'Transaktion 2', ''));
+
+// Überprüfen der Integrität der Blockchain
+console.log('Ist die Blockchain gültig?', meineBlockchain.istBlockchainGültig());
