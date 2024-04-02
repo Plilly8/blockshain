@@ -2,13 +2,7 @@
 class Block {
     constructor(index, vorherigerHash, timestamp, daten, hash) {
         this.index = index;             // Index des Blocks in der Kette
-        this.vorherigerHash = vorherigerHash; // Hash des vorherigen Blocks
-        this.timestamp = timestamp;     // Zeitstempel der Erstellung
-        this.daten = daten;             // Nutzlast oder Transaktionsdaten
-        this.hash = hash;               // Hash dieses Blocks
-    }
-}
-
+        this.vorher
 // Blockchainklasse repräsentiert die gesamte Blockchain
 class Blockchain {
     constructor() {
